@@ -1,6 +1,6 @@
 {
 	"name": "@o-zone/create-scorer",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Scaffold a new scorer app",
 	"repository": {
 		"url": "https://github.com/orienteering-nz/create-scorer"
@@ -14,11 +14,11 @@
 	],
 	"scripts": {
 		"build": "tsc",
-    "changes": "pnpm changeset add",
-    "check:types": "tsc --noEmit",
-    "format": "biome format . --write",
-    "lint": "biome check .",
-    "lint:fix": "biome check . --write",
+		"changes": "pnpm changeset add",
+		"check:types": "tsc --noEmit",
+		"format": "biome format . --write",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
 		"prepublishOnly": "pnpm run build"
 	},
 	"dependencies": {
