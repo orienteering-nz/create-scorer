@@ -1,0 +1,28 @@
+{
+	"name": "@o-zone/create-scorer",
+	"version": "0.1.0",
+	"description": "Scaffold a new scorer app",
+	"type": "module",
+	"bin": {
+		"create-scorer": "./dist/index.js"
+	},
+	"files": [
+		"dist",
+		"templates"
+	],
+	"scripts": {
+		"build": "bun build ./src/index.ts --outdir ./dist --target node --sourcemap=external",
+		"dev": "bun run ./src/index.ts",
+		"check": "biome check .",
+		"lint": "biome lint .",
+		"format": "biome format --write ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.0.0",
+		"typescript": "^5.7.3"
+	},
+	"engines": {
+		"bun": ">=1.0.0"
+	}
+}
