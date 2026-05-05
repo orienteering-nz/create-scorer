@@ -1,73 +1,93 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { createInterface } from "node:readline";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import * as p from "@clack/prompts";
+import { Command } from "commander";
+import { downloadTemplate } from "giget";
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+const NAME_RE = /^[a-z0-9@][a-z0-9._@/-]*$/;
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-function prompt(question: string): Promise<string> {
-	const rl = createInterface({ input: process.stdin, output: process.stdout });
-	return new Promise((resolve) => {
-		rl.question(question, (answer) => {
-			rl.close();
-			resolve(answer.trim());
-		});
-	});
+function validateName(value: string | undefined): string | undefined {
+	if (!value) return "Project name is required";
+	if (!NAME_RE.test(value)) return `"${value}" is not a valid project name`;
 }
 
-function copyTemplate(src: string, dest: string, projectName: string): void {
-	mkdirSync(dest, { recursive: true });
-	for (const entry of readdirSync(src)) {
-		const srcPath = join(src, entry);
-		const destPath = join(dest, entry);
-		if (statSync(srcPath).isDirectory()) {
-			copyTemplate(srcPath, destPath, projectName);
+function substituteTemplate(dir: string, projectName: string): void {
+	for (const entry of readdirSync(dir)) {
+		const fullPath = join(dir, entry);
+		if (statSync(fullPath).isDirectory()) {
+			substituteTemplate(fullPath, projectName);
 		} else {
-			const content = readFileSync(srcPath, "utf-8").replaceAll("{{PROJECT_NAME}}", projectName);
-			writeFileSync(destPath, content);
+			const content = readFileSync(fullPath, "utf-8");
+			if (content.includes("{{PROJECT_NAME}}")) {
+				writeFileSync(fullPath, content.replaceAll("{{PROJECT_NAME}}", projectName));
+			}
 		}
 	}
 }
 
 async function main(): Promise<void> {
-	let projectName = process.argv[2];
+	const program = new Command();
 
-	if (!projectName) {
-		projectName = await prompt("What is your scorer name? ");
-	}
+	program
+		.name("create-scorer")
+		.description("Scaffold a new scorer app")
+		.argument("[project-name]", "Name of the scorer project")
+		.action(async (projectNameArg?: string) => {
+			p.intro("create-scorer");
 
-	if (!projectName) {
-		console.error("Error: Please provide a project name.");
-		process.exit(1);
-	}
+			let projectName = projectNameArg;
 
-	if (!/^[a-z0-9@][a-z0-9._@/-]*$/.test(projectName)) {
-		console.error(`Error: "${projectName}" is not a valid project name.`);
-		process.exit(1);
-	}
+			if (!projectName) {
+				const answer = await p.text({
+					message: "What is your scorer name?",
+					validate: validateName,
+				});
 
-	const projectDir = join(process.cwd(), projectName);
+				if (p.isCancel(answer)) {
+					p.cancel("Operation cancelled.");
+					process.exit(0);
+				}
 
-	if (existsSync(projectDir)) {
-		console.error(`Error: Directory "${projectName}" already exists.`);
-		process.exit(1);
-	}
+				projectName = answer;
+			} else {
+				const err = validateName(projectName);
+				if (err) {
+					p.log.error(err);
+					process.exit(1);
+				}
+			}
 
-	console.log(`\nCreating scorer "${projectName}"...\n`);
+			const projectDir = join(process.cwd(), projectName);
 
-	const templateDir = join(__dirname, "..", "templates", "default");
-	copyTemplate(templateDir, projectDir, projectName);
+			const spin = p.spinner();
+			spin.start(`Creating scorer "${projectName}"`);
 
-	console.log(`✓ Created ${projectName} at ${projectDir}`);
-	console.log("\nNext steps:");
-	console.log(`  cd ${projectName}`);
-	console.log("  bun install");
-	console.log("  bun run dev");
-	console.log("");
+			if (existsSync(projectDir)) {
+				p.log.error(`Directory "${projectName}" already exists.`);
+				process.exit(1);
+			}
+
+			try {
+				await downloadTemplate("github:orienteering-nz/create-scorer/templates/default", {
+					dir: projectDir,
+				});
+				substituteTemplate(projectDir, projectName);
+			} catch (error) {
+				spin.stop("Failed to create scorer");
+				p.log.error(error instanceof Error ? error.message : String(error));
+				process.exit(1);
+			}
+
+			spin.stop(`Created ${projectName}`);
+			p.note(`cd ${projectName}\nbun install\nbun run dev`, "Next steps");
+			p.outro("Happy coding! 🎯");
+		});
+
+	await program.parseAsync();
 }
 
 main().catch((error: unknown) => {
 	console.error(error);
 	process.exit(1);
 });
+

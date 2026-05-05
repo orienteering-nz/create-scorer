@@ -30,8 +30,22 @@ Each generated scorer project includes:
 ## Development
 
 ```bash
-bun install
-bun run build   # compile CLI to dist/
-bun run dev     # run CLI from source
-bun run check   # lint + format check
+npm install
+npm run build   # compile CLI to dist/ via tsc
+npm run check   # lint + format check with biome
 ```
+
+### Releasing
+
+This package uses [changesets](https://github.com/changesets/changesets) for versioning and releases.
+
+```bash
+# create a changeset describing your changes
+npx changeset
+
+# version and release (automated via GitHub Actions on main)
+```
+
+When a PR is merged to `main`, the release workflow will either:
+- Open a "Version Packages" PR with the version bump and changelog, or
+- Publish to npm automatically once the Version Packages PR is merged.
