@@ -31,8 +31,9 @@ Each generated scorer project includes:
 
 ```bash
 pnpm install
-pnpm run build   # compile CLI to dist/ via tsc
-pnpm run check   # lint + format check with biome
+pnpm run build         # compile CLI to dist/ via tsc
+pnpm run check:types   # run type check with tsc
+pnpm run lint:fix      # lint + format with biome
 ```
 
 ### Releasing
