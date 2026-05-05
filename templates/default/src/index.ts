@@ -1,3 +1,6 @@
-import "@total-typescript/ts-reset";
+import { Scorer } from '@o-zone/scorer-core/server';
+import sumScorer from './competition/sum';
 
-console.log("Hello from {{PROJECT_NAME}}!");
+Scorer.serve({
+  '/competition/sum': sumScorer,
+});

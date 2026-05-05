@@ -1,0 +1,26 @@
+# Fly.io
+.dockerignore
+fly.toml
+Dockerfile*
+
+# Git
+.git
+.gitignore
+.github
+
+# Development
+node_modules
+.env*
+*.log
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build
+dist
+build

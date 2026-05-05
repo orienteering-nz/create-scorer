@@ -1,15 +1,16 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
-	"compilerOptions": {
-		"target": "ESNext",
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
-		"strict": true,
-		"outDir": "dist",
-		"rootDir": "src",
-		"lib": ["ESNext"],
-		"types": ["node"],
-		"skipLibCheck": true
-	},
-	"include": ["src"]
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    "types": ["node"]
+  },
+  "exclude": ["templates"],
+  "include": ["src"]
 }

@@ -30,9 +30,9 @@ Each generated scorer project includes:
 ## Development
 
 ```bash
-npm install
-npm run build   # compile CLI to dist/ via tsc
-npm run check   # lint + format check with biome
+pnpm install
+pnpm run build   # compile CLI to dist/ via tsc
+pnpm run check   # lint + format check with biome
 ```
 
 ### Releasing
@@ -41,7 +41,7 @@ This package uses [changesets](https://github.com/changesets/changesets) for ver
 
 ```bash
 # create a changeset describing your changes
-npx changeset
+pnpx changeset
 
 # version and release (automated via GitHub Actions on main)
 ```
