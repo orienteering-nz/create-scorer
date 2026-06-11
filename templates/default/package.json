@@ -10,7 +10,7 @@
     "lint:fix": "bun biome check --write ."
   },
   "dependencies": {
-    "@o-zone/scorer-core": "^2.1.0",
+    "@o-zone/scorer-core": "latest",
     "zod": "^4.4.3"
   },
   "devDependencies": {
